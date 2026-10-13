@@ -23,8 +23,12 @@ let map_r_to_l wiring top_letter input_pos =
   let contact = wrap (input_pos + offset) in
   wrap (index wiring.[contact] - offset)
 
-let map_l_to_r _wiring _top_letter _input_pos =
-  failwith "Unimplemented"
+let letter_of_index i = Char.chr (i + Char.code 'A')
+
+let map_l_to_r wiring top_letter input_pos =
+  let offset = index top_letter in
+  let contact = wrap (input_pos + offset) in
+  wrap (String.index wiring (letter_of_index contact) - offset)
 
 let map_refl _wiring _input_pos =
   failwith "Unimplemented"

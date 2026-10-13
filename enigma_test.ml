@@ -13,6 +13,9 @@ let index_test name input expected =
 let r_to_l_test name wiring top pos expected =
   name >:: fun _ -> assert_equal expected (map_r_to_l wiring top pos)
 
+let l_to_r_test name wiring top pos expected =
+  name >:: fun _ -> assert_equal expected (map_l_to_r wiring top pos)
+
 let suite =
   "Enigma test suite" >::: [
     (* index *)
@@ -29,6 +32,12 @@ let suite =
     r_to_l_test "rotor III at O maps 14 to 17" rotor_III 'O' 14 17;
     r_to_l_test "rotor I at A maps 1 to 10" rotor_I 'A' 1 10;
 
+    (* map_l_to_r *)
+    l_to_r_test "identity rotor fixes position 0" identity 'A' 0 0;
+    l_to_r_test "rotor I at F maps 10 to 14" rotor_I 'F' 10 14;
+    l_to_r_test "rotor I at A maps 0 to 20" rotor_I 'A' 0 20;
+    l_to_r_test "identity rotor at A maps 5 to 5" identity 'A' 5 5;
+    l_to_r_test "rotor III at A maps 4 to 15" rotor_III 'A' 4 15;
 
   ]
 
