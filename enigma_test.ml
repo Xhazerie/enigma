@@ -2,10 +2,15 @@ open OUnit2
 open Enigma
 
 let rotor_I = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
-(* let rotor_II = "AJDKSIRUXBLHWTMCQGZNPYFVOE" *)
+let rotor_II = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
 let rotor_III = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
 let identity = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 let refl_B = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
+
+let rI = { wiring = rotor_I; turnover = 'Q' }
+let rII = { wiring = rotor_II; turnover = 'E' }
+let rIII = { wiring = rotor_III; turnover = 'V' }
+let orient r t = { rotor = r; top_letter = t }
 
 let index_test name input expected =
   name >:: fun _ ->
@@ -22,6 +27,17 @@ let refl_test name wiring pos expected =
 
 let plug_test name plugs c expected =
   name >:: fun _ -> assert_equal expected (map_plug plugs c)
+
+let cipher_char_test name config c expected =
+  name >:: fun _ -> assert_equal expected (cipher_char config c)
+
+let gp_config =
+  { refl = refl_B;
+    rotors = [ orient rI 'A'; orient rII 'A'; orient rIII 'A' ];
+    plugboard = [] }
+
+let id_config =
+  { refl = identity; rotors = []; plugboard = [] }
 
 let suite =
   "Enigma test suite" >::: [
@@ -61,6 +77,13 @@ let suite =
       [ ('A', 'Z'); ('X', 'Y') ] 'X' 'Y';
     plug_test "unconnected letter unchanged"
       [ ('A', 'Z'); ('X', 'Y') ] 'M' 'M';
+
+    (* cipher_char *)
+    cipher_char_test "no-rotor identity maps A to A" id_config 'A' 'A';
+    cipher_char_test "no-rotor identity maps B to B" id_config 'B' 'B';
+    cipher_char_test "no-rotor identity maps Z to Z" id_config 'Z' 'Z';
+    cipher_char_test "historical config maps G to P" gp_config 'G' 'P';
+    cipher_char_test "historical config maps A to U" gp_config 'A' 'U';
   ]
 
 let () = run_test_tt_main suite

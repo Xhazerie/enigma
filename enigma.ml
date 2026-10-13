@@ -41,8 +41,20 @@ let rec map_plug plugs c =
     else if c = b then a
     else map_plug rest c
 
-let cipher_char _config _c =
-  failwith "Unimplemented"
+let cipher_char config c =
+  let pos = index (map_plug config.plugboard c) in
+  let after_r =
+    List.fold_right
+      (fun r acc -> map_r_to_l r.rotor.wiring r.top_letter acc)
+      config.rotors pos
+  in
+  let after_refl = map_refl config.refl after_r in
+  let after_l =
+    List.fold_left
+      (fun acc r -> map_l_to_r r.rotor.wiring r.top_letter acc)
+      after_refl config.rotors
+  in
+  map_plug config.plugboard (letter_of_index after_l)
 
 let step _config =
   failwith "Unimplemented"
