@@ -56,8 +56,21 @@ let cipher_char config c =
   in
   map_plug config.plugboard (letter_of_index after_l)
 
-let step _config =
-  failwith "Unimplemented"
+let at_turnover r = r.top_letter = r.rotor.turnover
+
+let advance r =
+  { r with top_letter = letter_of_index (wrap (index r.top_letter + 1)) }
+
+let step config =
+  let rec step_rotors is_leftmost rotors =
+    match rotors with
+    | [] -> []
+    | [ last ] -> [ advance last ]
+    | r :: (next :: _ as rest) ->
+      let steps = (not is_leftmost && at_turnover r) || at_turnover next in
+      (if steps then advance r else r) :: step_rotors false rest
+  in
+  { config with rotors = step_rotors true config.rotors }
 
 let cipher _config _s =
   failwith "Unimplemented"

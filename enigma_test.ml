@@ -31,6 +31,11 @@ let plug_test name plugs c expected =
 let cipher_char_test name config c expected =
   name >:: fun _ -> assert_equal expected (cipher_char config c)
 
+let tops config = List.map (fun r -> r.top_letter) config.rotors
+
+let step_test name config expected =
+  name >:: fun _ -> assert_equal expected (tops (step config))
+
 let gp_config =
   { refl = refl_B;
     rotors = [ orient rI 'A'; orient rII 'A'; orient rIII 'A' ];
@@ -38,6 +43,12 @@ let gp_config =
 
 let id_config =
   { refl = identity; rotors = []; plugboard = [] }
+
+let step_config tops =
+  { refl = refl_B;
+    rotors =
+      [ orient rIII tops.[0]; orient rII tops.[1]; orient rI tops.[2] ];
+    plugboard = [] }
 
 let suite =
   "Enigma test suite" >::: [
@@ -84,6 +95,15 @@ let suite =
     cipher_char_test "no-rotor identity maps Z to Z" id_config 'Z' 'Z';
     cipher_char_test "historical config maps G to P" gp_config 'G' 'P';
     cipher_char_test "historical config maps A to U" gp_config 'A' 'U';
+
+    (* step *)
+    step_test "rightmost steps KDO to KDP" (step_config "KDO") [ 'K'; 'D'; 'P' ];
+    step_test "turnover steps KDQ to KER" (step_config "KDQ") [ 'K'; 'E'; 'R' ];
+    step_test "double step KER to LFS" (step_config "KER") [ 'L'; 'F'; 'S' ];
+    step_test "turnover steps VDQ to VER" (step_config "VDQ") [ 'V'; 'E'; 'R' ];
+    step_test "double step VER to WFS" (step_config "VER") [ 'W'; 'F'; 'S' ];
+
+
   ]
 
 let () = run_test_tt_main suite
