@@ -15,9 +15,12 @@ let r_to_l_test name wiring top pos expected =
 
 let suite =
   "Enigma test suite" >::: [
+    (* index *)
     index_test "index of A is 0" 'A' 0;
     index_test "index of Z is 25" 'Z' 25;
-
+    index_test "index of B is 1" 'B' 1;
+    index_test "index of M is 12" 'M' 12;
+    index_test "index of G is 6" 'G' 6;
 
     (* map_r_to_l *)
     r_to_l_test "identity rotor fixes position 0" identity 'A' 0 0;
@@ -26,7 +29,7 @@ let suite =
     r_to_l_test "rotor III at O maps 14 to 17" rotor_III 'O' 14 17;
     r_to_l_test "rotor I at A maps 1 to 10" rotor_I 'A' 1 10;
 
-    
+
   ]
 
 let () = run_test_tt_main suite
