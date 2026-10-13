@@ -30,8 +30,8 @@ let map_l_to_r wiring top_letter input_pos =
   let contact = wrap (input_pos + offset) in
   wrap (String.index wiring (letter_of_index contact) - offset)
 
-let map_refl _wiring _input_pos =
-  failwith "Unimplemented"
+let map_refl wiring input_pos =
+  index wiring.[input_pos]
 
 let map_plug _plugs _c =
   failwith "Unimplemented"

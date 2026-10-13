@@ -5,6 +5,7 @@ let rotor_I = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
 (* let rotor_II = "AJDKSIRUXBLHWTMCQGZNPYFVOE" *)
 let rotor_III = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
 let identity = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+let refl_B = "YRUHQSLDPXNGOKMIEBFZCWVJAT"
 
 let index_test name input expected =
   name >:: fun _ ->
@@ -15,6 +16,9 @@ let r_to_l_test name wiring top pos expected =
 
 let l_to_r_test name wiring top pos expected =
   name >:: fun _ -> assert_equal expected (map_l_to_r wiring top pos)
+
+let refl_test name wiring pos expected =
+  name >:: fun _ -> assert_equal expected (map_refl wiring pos)
 
 let suite =
   "Enigma test suite" >::: [
@@ -39,6 +43,12 @@ let suite =
     l_to_r_test "identity rotor at A maps 5 to 5" identity 'A' 5 5;
     l_to_r_test "rotor III at A maps 4 to 15" rotor_III 'A' 4 15;
 
+    (* map_refl *)
+    refl_test "identity reflector fixes 0" identity 0 0;
+    refl_test "identity reflector fixes 25" identity 25 25;
+    refl_test "reflector B maps 5 to 18" refl_B 5 18;
+    refl_test "reflector B maps 0 to 24" refl_B 0 24;
+    refl_test "reflector B maps 24 to 0" refl_B 24 0;
   ]
 
 let () = run_test_tt_main suite
