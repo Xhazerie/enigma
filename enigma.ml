@@ -72,7 +72,15 @@ let step config =
   in
   { config with rotors = step_rotors true config.rotors }
 
-let cipher _config _s =
-  failwith "Unimplemented"
+let cipher config s =
+  let rec aux config chars =
+    match chars with
+    | [] -> []
+    | c :: rest ->
+      let config = step config in
+      cipher_char config c :: aux config rest
+  in
+  s |> String.to_seq |> List.of_seq |> aux config
+    |> List.to_seq |> String.of_seq
 
-let hours_worked = 0
+let hours_worked = 5

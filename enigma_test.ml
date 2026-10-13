@@ -36,6 +36,9 @@ let tops config = List.map (fun r -> r.top_letter) config.rotors
 let step_test name config expected =
   name >:: fun _ -> assert_equal expected (tops (step config))
 
+let cipher_test name config s expected =
+  name >:: fun _ -> assert_equal expected (cipher config s) ~printer:(fun x -> x)
+  
 let gp_config =
   { refl = refl_B;
     rotors = [ orient rI 'A'; orient rII 'A'; orient rIII 'A' ];
@@ -49,6 +52,11 @@ let step_config tops =
     rotors =
       [ orient rIII tops.[0]; orient rII tops.[1]; orient rI tops.[2] ];
     plugboard = [] }
+
+let full_config =
+  { refl = refl_B;
+    rotors = [ orient rI 'F'; orient rII 'U'; orient rIII 'N' ];
+    plugboard = [ ('A', 'Z') ] }
 
 let suite =
   "Enigma test suite" >::: [
@@ -103,6 +111,13 @@ let suite =
     step_test "turnover steps VDQ to VER" (step_config "VDQ") [ 'V'; 'E'; 'R' ];
     step_test "double step VER to WFS" (step_config "VER") [ 'W'; 'F'; 'S' ];
 
+    (* cipher *)
+    cipher_test "empty string ciphers to empty" full_config "" "";
+    cipher_test "OCAML ciphers to YNGXQ" full_config "OCAML" "YNGXQ";
+    cipher_test "YNGXQ deciphers to OCAML" full_config "YNGXQ" "OCAML";
+    cipher_test "single character" gp_config "A" "B";
+    cipher_test "cipher is an involution"
+    full_config (cipher full_config "HELLO") "HELLO";
 
   ]
 
