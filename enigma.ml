@@ -16,6 +16,7 @@ type config = {
 
 let index c = Char.code c - Char.code 'A'
 
+(** [wrap n] is [n] reduced into [0]..[25], correct for negative [n]. *)
 let wrap n = ((n mod 26) + 26) mod 26
 
 let map_r_to_l wiring top_letter input_pos =
@@ -23,6 +24,7 @@ let map_r_to_l wiring top_letter input_pos =
   let contact = wrap (input_pos + offset) in
   wrap (index wiring.[contact] - offset)
 
+(** [letter_of_index i] is the uppercase letter at alphabet index [i]. *)
 let letter_of_index i = Char.chr (i + Char.code 'A')
 
 let map_l_to_r wiring top_letter input_pos =
@@ -56,8 +58,10 @@ let cipher_char config c =
   in
   map_plug config.plugboard (letter_of_index after_l)
 
+(** [at_turnover r] is [true] when [r] shows its turnover letter. *)
 let at_turnover r = r.top_letter = r.rotor.turnover
 
+(** [advance r] is [r] rotated forward one position. *)
 let advance r =
   { r with top_letter = letter_of_index (wrap (index r.top_letter + 1)) }
 
@@ -83,4 +87,4 @@ let cipher config s =
   s |> String.to_seq |> List.of_seq |> aux config
     |> List.to_seq |> String.of_seq
 
-let hours_worked = 5
+let hours_worked = 9
